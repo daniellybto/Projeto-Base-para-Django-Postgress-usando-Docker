@@ -1,0 +1,42 @@
+# version: '3.8'
+
+services:
+  web_django:
+    container_name: djangoWeb
+    user: userdjango # user criado no Dockerfile
+    group_add: # grupo do usuário criado no Dockerfile
+      - '1001'
+    build:
+      context: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./app/:/usr/src/app/
+      - ./data/:/usr/src/data/
+    ports:
+      - 8000:8000
+    env_file:
+      - ./conf/.env
+    depends_on:
+      - "db_postgresql"
+    restart: always
+    networks:
+      - django_network
+      
+  db_postgresql:
+    container_name: postgressDB
+    image: postgres:16.2-alpine3.18
+    env_file:
+      - ./conf/.env
+    volumes:
+      - ./data/postgres/data:/var/lib/postgresql/data/
+    ports:
+      - "5433:5432"
+    networks:
+      - django_network
+
+networks:
+  django_network:
+    driver: bridge
+
+volumes:
+  data:

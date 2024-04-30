@@ -1,0 +1,4 @@
+app/venv/*
+db.sqlite3
+data/*
+.env
